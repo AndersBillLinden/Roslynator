@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -27,6 +28,28 @@ namespace Roslynator
             SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
             SyntaxNode newRoot = root.ReplaceNode(oldNode, newNode);
+
+            return document.WithSyntaxRoot(newRoot);
+        }
+
+        public static async Task<Document> ReplaceNodeAsync(
+            this Document document,
+            SyntaxNode oldNode,
+            IEnumerable<SyntaxNode> newNodes,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+
+            if (oldNode == null)
+                throw new ArgumentNullException(nameof(oldNode));
+
+            if (newNodes == null)
+                throw new ArgumentNullException(nameof(newNodes));
+
+            SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+
+            SyntaxNode newRoot = root.ReplaceNode(oldNode, newNodes);
 
             return document.WithSyntaxRoot(newRoot);
         }
